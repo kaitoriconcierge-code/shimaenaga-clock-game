@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#7fc8f8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="とけいマスター">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>シマエナガ とけいマスター</title>
+  <style>
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    :root{
+      --sky:#dff4ff;--blue:#59b6ef;--blue2:#227fc0;--yellow:#ffd65a;--pink:#ff9db7;
+      --green:#8fd18f;--ink:#334155;--card:#ffffff;--soft:#fffaf0;--ok:#2fa86f;--ng:#ef6f6c;
+    }
+    body{
+      margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+      background:linear-gradient(#dff4ff 0,#f8fdff 50%,#fffaf0 100%);color:var(--ink);min-height:100vh;
+      overflow-x:hidden;
+    }
+    button{font:inherit;touch-action:manipulation}
+    .app{max-width:720px;margin:0 auto;padding:env(safe-area-inset-top) 14px calc(24px + env(safe-area-inset-bottom));}
+    .hero{display:flex;align-items:center;gap:12px;padding:10px 2px 4px}
+    .hero img{width:88px;height:88px;object-fit:cover;border-radius:24px;border:4px solid #fff;box-shadow:0 4px 12px #0002}
+    .title{font-weight:900;font-size:clamp(24px,7vw,34px);line-height:1.1;color:#256d9b}
+    .subtitle{font-size:14px;font-weight:700;margin-top:6px}
+    .toprow{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:10px 0}
+    .pill{background:#fff;border:2px solid #dbeafe;border-radius:999px;padding:8px 12px;font-weight:900;box-shadow:0 2px 8px #00000010}
+    .sound{border:0;background:#fff;border-radius:999px;min-width:48px;min-height:48px;font-size:23px;box-shadow:0 2px 8px #0001}
+    .levelwrap{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:9px 0 12px}
+    .level{border:2px solid #cae9fb;background:#fff;border-radius:16px;min-height:60px;padding:7px 3px;font-weight:900;color:#315b76}
+    .level small{display:block;font-weight:700;font-size:11px;margin-top:2px}
+    .level.active{background:#fff3a9;border-color:#f2c84b;transform:translateY(-1px)}
+    .panel{background:#ffffffd9;border:3px solid #fff;border-radius:26px;padding:14px;box-shadow:0 6px 20px #256d9b18;backdrop-filter:blur(5px)}
+    .qtitle{text-align:center;font-size:20px;font-weight:900;margin-bottom:4px}
+    .hint{text-align:center;font-size:13px;font-weight:700;color:#64748b;min-height:20px}
+    .clockbox{display:flex;justify-content:center;padding:8px 0}
+    svg{width:min(84vw,360px);height:auto;filter:drop-shadow(0 4px 4px #0002)}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .answer{min-height:64px;border:3px solid #d8edf9;border-radius:18px;background:#fff;font-size:20px;font-weight:900;color:#305b79;box-shadow:0 3px 0 #c4e4f6}
+    .answer:active{transform:translateY(2px);box-shadow:0 1px 0 #c4e4f6}
+    .answer.correct{background:#e7faef;border-color:#63c78f;color:#187a48}
+    .answer.wrong{background:#fff0f0;border-color:#ff9896;color:#b83b39}
+    .feedback{margin-top:12px;min-height:64px;border-radius:18px;background:#f7fbfe;border:2px dashed #bee3f8;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;font-weight:900;font-size:18px}
+    .next{width:100%;min-height:58px;border:0;border-radius:18px;margin-top:10px;background:linear-gradient(180deg,#76cdf6,#4caee7);color:white;font-weight:900;font-size:20px;box-shadow:0 4px 0 #2689c4}
+    .next:disabled{opacity:.38;box-shadow:none}
+    .lesson{margin-top:12px;background:#fff8d7;border:2px solid #f6dc73;border-radius:18px;padding:11px 13px;font-weight:700;font-size:14px;line-height:1.6}
+    .finish{display:none;text-align:center;padding:26px 12px}
+    .finish .big{font-size:54px}
+    .finish h2{font-size:27px;margin:8px 0}
+    .retry{border:0;background:#ffb2c5;border-radius:18px;padding:14px 24px;font-weight:900;font-size:19px;color:#743145;min-height:54px}
+    .starsBurst{font-size:31px;letter-spacing:4px}
+    .footer{text-align:center;font-size:12px;color:#789;margin-top:14px}
+    @media(max-width:420px){
+      .hero img{width:76px;height:76px;border-radius:20px}
+      .levelwrap{grid-template-columns:1fr 1fr}
+      .answer{font-size:18px}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="hero">
+    <img src="shimaenaga.png" alt="時計を教えてくれるかわいいシマエナガ">
+    <div>
+      <div class="title">⏰ とけいマスター</div>
+      <div class="subtitle">シマエナガと いっしょに とけいを よもう！</div>
+    </div>
+  </div>
+
+  <div class="toprow">
+    <div class="pill">⭐ <span id="score">0</span>　<span id="progress">1 / 5</span></div>
+    <button id="soundBtn" class="sound" type="button" aria-label="音声のオンオフ">🔊</button>
+  </div>
+
+  <div class="levelwrap" aria-label="レベル選択">
+    <button class="level active" type="button" data-level="1">🌱 レベル1<small>○じ</small></button>
+    <button class="level" type="button" data-level="2">🌼 レベル2<small>○じはん</small></button>
+    <button class="level" type="button" data-level="3">🚀 レベル3<small>5ふんずつ</small></button>
+    <button class="level" type="button" data-level="4">👑 レベル4<small>ミックス</small></button>
+  </div>
+
+  <main class="panel" id="gamePanel">
+    <div class="qtitle" id="question">この とけいは なんじ？</div>
+    <div class="hint" id="hint">みじかい はりを よくみてね</div>
+
+    <div class="clockbox">
+      <svg viewBox="0 0 360 360" role="img" aria-label="問題のアナログ時計">
+        <defs>
+          <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffe38a"/><stop offset="1" stop-color="#ffbd3c"/>
+          </linearGradient>
+        </defs>
+        <circle cx="180" cy="180" r="164" fill="url(#rim)"/>
+        <circle cx="180" cy="180" r="148" fill="#fffdf6" stroke="#f7d66b" stroke-width="3"/>
+        <g id="ticks"></g>
+        <g id="nums" font-size="25" font-weight="900" text-anchor="middle" dominant-baseline="middle" fill="#425466"></g>
+        <line id="hourHand" x1="180" y1="180" x2="180" y2="104" stroke="#ef5b5b" stroke-width="12" stroke-linecap="round"/>
+        <line id="minuteHand" x1="180" y1="180" x2="180" y2="66" stroke="#2c93db" stroke-width="8" stroke-linecap="round"/>
+        <circle cx="180" cy="180" r="13" fill="#ffc744" stroke="#e9a918" stroke-width="3"/>
+      </svg>
+    </div>
+
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback" aria-live="polite">シマエナガ「こたえを えらんでね 😊」</div>
+    <button id="nextBtn" class="next" type="button" disabled>つぎの もんだい ➜</button>
+
+    <div class="lesson" id="lesson">
+      💡 <b>コツ：</b>みじかいはりは「じ」、ながいはりは「ふん」を おしえてくれるよ。
+    </div>
+  </main>
+
+  <section class="panel finish" id="finish">
+    <div class="big">🎉🐦🎉</div>
+    <div class="starsBurst" id="starBurst"></div>
+    <h2>よくできました！</h2>
+    <p id="finishText"></p>
+    <button class="retry" id="retryBtn" type="button">もういちど あそぶ</button>
+  </section>
+
+  <div class="footer">シマエナガ とけいマスター</div>
+</div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  const ticks = $('#ticks'), nums = $('#nums');
+  const hourHand=$('#hourHand'), minuteHand=$('#minuteHand');
+  const answers=$('#answers'), feedback=$('#feedback'), nextBtn=$('#nextBtn');
+  const scoreEl=$('#score'), progressEl=$('#progress'), question=$('#question'), hint=$('#hint');
+  const gamePanel=$('#gamePanel'), finish=$('#finish'), finishText=$('#finishText'), starBurst=$('#starBurst');
+  let level=1, q=1, score=0, correct={h:3,m:0}, answered=false, sound=true;
+
+  // Clock face
+  for(let i=0;i<60;i++){
+    const a=i*6*Math.PI/180, r1=i%5===0?132:138, r2=144;
+    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',180+Math.sin(a)*r1); l.setAttribute('y1',180-Math.cos(a)*r1);
+    l.setAttribute('x2',180+Math.sin(a)*r2); l.setAttribute('y2',180-Math.cos(a)*r2);
+    l.setAttribute('stroke', i%5===0 ? '#708090' : '#b9c5ce');
+    l.setAttribute('stroke-width', i%5===0 ? '4' : '1.5');
+    ticks.appendChild(l);
+  }
+  for(let n=1;n<=12;n++){
+    const a=n*30*Math.PI/180, t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',180+Math.sin(a)*113); t.setAttribute('y',180-Math.cos(a)*113);
+    t.textContent=n; nums.appendChild(t);
+  }
+
+  const praise=['すごい！','やったね！','せいかい！','ばっちり！','てんさい！'];
+  function speak(text){
+    if(!sound || !('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='ja-JP'; u.rate=.92; u.pitch=1.18;
+    speechSynthesis.speak(u);
+  }
+  function fmt(h,m){
+    if(m===0) return `${h}じ`;
+    if(m===30) return `${h}じ30ぷん`;
+    return `${h}じ${m}ふん`;
+  }
+  function spoken(h,m){
+    if(m===0) return `${h}じ`;
+    if(m===30) return `${h}じはん`;
+    return `${h}じ${m}ふん`;
+  }
+  function key(t){ return t.h*60+t.m; }
+  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function makeTime(){
+    const h=1+Math.floor(Math.random()*12);
+    let m=0;
+    if(level===1) m=0;
+    else if(level===2) m=rand([0,30]);
+    else m=rand([0,5,10,15,20,25,30,35,40,45,50,55]);
+    return {h,m};
+  }
+  function draw(t){
+    const ha=(t.h%12)*30+t.m*.5, ma=t.m*6;
+    hourHand.setAttribute('transform',`rotate(${ha} 180 180)`);
+    minuteHand.setAttribute('transform',`rotate(${ma} 180 180)`);
+  }
+  function choicesFor(t){
+    const mins=level===1?[0]:level===2?[0,30]:[0,5,10,15,20,25,30,35,40,45,50,55];
+    const pool=[];
+    for(let dh=-2;dh<=2;dh++){
+      for(const m of mins){
+        let h=t.h+dh; while(h<1) h+=12; while(h>12) h-=12;
+        const x={h,m}; if(key(x)!==key(t)) pool.push(x);
+      }
+    }
+    pool.sort(()=>Math.random()-.5);
+    return [t,...pool.slice(0,3)].sort(()=>Math.random()-.5);
+  }
+  function setLevels(){
+    $$('.level').forEach(b=>b.classList.toggle('active',Number(b.dataset.level)===level));
+  }
+  function newQuestion(){
+    answered=false; nextBtn.disabled=true; nextBtn.textContent=q===5?'けっかを みる 🎉':'つぎの もんだい ➜';
+    progressEl.textContent=`${q} / 5`;
+    feedback.textContent='シマエナガ「こたえを えらんでね 😊」';
+    correct=makeTime(); draw(correct);
+    question.textContent=level===1?'この とけいは なんじ？':'この とけいは なんじ なんぷん？';
+    if(level===1) hint.textContent='みじかい はりが さしている すうじを みよう';
+    else if(level===2) hint.textContent='ながい はりが 6なら「30ぷん＝はん」だよ';
+    else hint.textContent='ながい はりは 5ふんずつ すすむよ';
+    answers.innerHTML='';
+    for(const c of choicesFor(correct)){
+      const b=document.createElement('button');
+      b.className='answer'; b.type='button'; b.textContent=fmt(c.h,c.m);
+      b.addEventListener('click',()=>answer(b,c));
+      answers.appendChild(b);
+    }
+  }
+  function answer(btn,c){
+    if(answered) return; answered=true;
+    $$('.answer').forEach(b=>b.disabled=true);
+    if(key(c)===key(correct)){
+      score++; scoreEl.textContent=score; btn.classList.add('correct');
+      const p=rand(praise);
+      feedback.textContent=`🐦「${p} ${spoken(correct.h,correct.m)}だよ！」`;
+      speak(`${p} ${spoken(correct.h,correct.m)}だよ`);
+    }else{
+      btn.classList.add('wrong');
+      $$('.answer').forEach(b=>{ if(b.textContent===fmt(correct.h,correct.m)) b.classList.add('correct'); });
+      feedback.textContent=`🐦「おしい！ せいかいは ${spoken(correct.h,correct.m)}だよ」`;
+      speak(`おしい。せいかいは ${spoken(correct.h,correct.m)}だよ`);
+    }
+    nextBtn.disabled=false;
+  }
+  function showFinish(){
+    gamePanel.style.display='none'; finish.style.display='block';
+    starBurst.textContent='⭐'.repeat(score)+'☆'.repeat(5-score);
+    let msg='';
+    if(score===5) msg='5もん ぜんぶせいかい！ とけいはかせだね 👑';
+    else if(score>=4) msg=`5もんちゅう ${score}もん せいかい！ すごい！`;
+    else if(score>=2) msg=`5もんちゅう ${score}もん せいかい！ もうすこし！`;
+    else msg=`5もんちゅう ${score}もん せいかい！ いっしょに れんしゅうしよう！`;
+    finishText.textContent=msg; speak(msg.replace('👑',''));
+  }
+
+  nextBtn.addEventListener('click',()=>{ if(!answered)return; if(q>=5)showFinish(); else{q++;newQuestion();} });
+  $('#retryBtn').addEventListener('click',()=>{q=1;score=0;scoreEl.textContent='0';finish.style.display='none';gamePanel.style.display='block';newQuestion();});
+  $$('.level').forEach(b=>b.addEventListener('click',()=>{
+    level=Number(b.dataset.level); q=1; score=0; scoreEl.textContent='0';
+    finish.style.display='none'; gamePanel.style.display='block'; setLevels(); newQuestion();
+    speak(`レベル${level}`);
+  }));
+  $('#soundBtn').addEventListener('click',e=>{
+    sound=!sound; e.currentTarget.textContent=sound?'🔊':'🔇'; if(sound)speak('おとの せっていは オンだよ');
+  });
+
+  setLevels(); newQuestion();
+
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
+})();
+</script>
+</body>
+</html>
